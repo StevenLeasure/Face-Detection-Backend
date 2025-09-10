@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
-const knex = require('knex')
+// const knex = require('knex')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const { createClient } = require('@supabase/supabase-js');
 
@@ -14,18 +14,19 @@ const signin = require('./controllers/signin');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
 
-const db =knex({
-  client: 'pg',
-  connection: process.env.DATABASE_URL || {
-    host: '127.0.0.1',
-    user: 'StevenCoding',
-    port: 5432,
-    password: '',
-    database: 'smart-brain',
-  },
-});
+// const db =knex({
+//   client: 'pg',
+//   connection: process.env.DATABASE_URL || {
+//     host: '127.0.0.1',
+//     user: 'StevenCoding',
+//     port: 5432,
+//     password: '',
+//     database: 'smart-brain',
+//   },
+// });
 
-db.select('*').from('users').then(data => {
+supabase.from('users').select('*').then(data => {
+	if (error) console.error('Supabase error:', error);
 	// console.log(data);
 });
 
@@ -38,13 +39,13 @@ app.use(express.json());
 
 app.get('/', (req, res) => {res.send('it is working')})
 
-app.post('/signin', signin.handleSignin(db, bcrypt))
+app.post('/signin', signin.handleSignin(supabase, bcrypt))
 
-app.post('/register', register.handleRegister(db, bcrypt))
+app.post('/register', register.handleRegister(supabase, bcrypt))
 
-app.get('/profile/:id', profile.handleProfileGet(db))
+app.get('/profile/:id', profile.handleProfileGet(supabase))
 
-app.put('/image', image.handleImage(db))
+app.put('/image', image.handleImage(supabase))
 
 app.post('/api/clarifai', async (req, res) => {
   const { imageUrl, requestOptions } = req.body;
