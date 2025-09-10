@@ -25,7 +25,7 @@ const image = require('./controllers/image');
 //   },
 // });
 
-supabase.from('users').select('*').then(data => {
+supabase.from('users').select('*').then(({ data, error }) => {
 	if (error) console.error('Supabase error:', error);
 	// console.log(data);
 });
