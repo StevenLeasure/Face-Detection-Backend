@@ -13,6 +13,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
     "bcrypt-nodejs": "^0.0.3",
     "clarifai": "^2.9.1",
     "clarifai-nodejs": "^0.3.0",
