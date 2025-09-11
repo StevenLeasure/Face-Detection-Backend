@@ -5,11 +5,6 @@ const knex = require('knex')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 // const { createClient } = require('@supabase/supabase-js');
 
-const app = express();
-app.use(cors());
-app.use(express.urlencoded({extended: false}));
-app.use(express.json());
-
 // const supabaseUrl = 'https://unvsuxcysvxkoslhtfrq.supabase.co'
 // const supabaseKey = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVudnN1eGN5c3Z4a29zbGh0ZnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyOTcwNjgsImV4cCI6MjA3Mjg3MzA2OH0.bcMXvFFOe6kuNqKI3x8wIORGgN-QDK7ELPjLshlHD98'
 // const supabase = createClient(supabaseUrl, supabaseKey)
