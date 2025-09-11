@@ -11,10 +11,11 @@ const image = require('./controllers/image');
 
 const db = knex({
   client: 'pg',
-  connection: process.env.DATABASE_URL ? {
+  connection: {
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
-  } 
+  }
+});
   // {
   //   // host: 'db.unvsuxcysvxkoslhtfrq.supabase.co',
   //   // port: 5432,
@@ -23,7 +24,7 @@ const db = knex({
   //   // database: 'postgres',
   //   // ssl: { rejectUnauthorized: false }
   // }
-});
+
 
 db.raw('SELECT 1')
   .then(() => console.log('✅ Connected to Supabase PostgreSQL'))
