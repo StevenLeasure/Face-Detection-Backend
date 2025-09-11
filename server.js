@@ -14,18 +14,24 @@ const signin = require('./controllers/signin');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
 
-const db =knex({
+const db = knex({
   client: 'pg',
-  connection: {
-    connectionString: process.env.DATABASE_URL || 'postgresql://postgres:[YOUR-PASSWORD]@db.unvsuxcysvxkoslhtfrq.supabase.co:5432/postgres',
-    ssl: { rejectUnauthorized: false }, // Important for Supabase
+  connection: process.env.DATABASE_URL ? {
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+  } : {
     host: 'db.unvsuxcysvxkoslhtfrq.supabase.co',
     port: 5432,
     user: 'postgres',
     password: process.env.SUPABASE_DB_PASSWORD,
-    database: 'postgres'
-  },
+    database: 'postgres',
+    ssl: { rejectUnauthorized: false }
+  }
 });
+
+db.raw('SELECT 1')
+  .then(() => console.log('Connected to Supabase PostgreSQL with Knex'))
+  .catch(err => console.error('Connection error:', err));
 
 db.select('*').from('users').then(({ data, error }) => {
 	if (error) console.error('Supabase error:', error);
