@@ -3,11 +3,11 @@ const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
 const knex = require('knex')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-// const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require('@supabase/supabase-js');
 
-// const supabaseUrl = 'https://unvsuxcysvxkoslhtfrq.supabase.co'
-// const supabaseKey = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVudnN1eGN5c3Z4a29zbGh0ZnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyOTcwNjgsImV4cCI6MjA3Mjg3MzA2OH0.bcMXvFFOe6kuNqKI3x8wIORGgN-QDK7ELPjLshlHD98'
-// const supabase = createClient(supabaseUrl, supabaseKey)
+const supabaseUrl = 'https://unvsuxcysvxkoslhtfrq.supabase.co'
+const supabaseKey = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVudnN1eGN5c3Z4a29zbGh0ZnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyOTcwNjgsImV4cCI6MjA3Mjg3MzA2OH0.bcMXvFFOe6kuNqKI3x8wIORGgN-QDK7ELPjLshlHD98'
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
@@ -19,24 +19,29 @@ const db = knex({
   connection: process.env.DATABASE_URL ? {
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
-  } : {
-    host: 'db.unvsuxcysvxkoslhtfrq.supabase.co',
-    port: 5432,
-    user: 'postgres',
-    password: process.env.SUPABASE_DB_PASSWORD,
-    database: 'postgres',
-    ssl: { rejectUnauthorized: false }
-  }
+  } : 
+  // {
+  //   // host: 'db.unvsuxcysvxkoslhtfrq.supabase.co',
+  //   // port: 5432,
+  //   // user: 'postgres',
+  //   // password: process.env.SUPABASE_DB_PASSWORD,
+  //   // database: 'postgres',
+  //   // ssl: { rejectUnauthorized: false }
+  // }
 });
 
 db.raw('SELECT 1')
-  .then(() => console.log('Connected to Supabase PostgreSQL with Knex'))
-  .catch(err => console.error('Connection error:', err));
+  .then(() => console.log('✅ Connected to Supabase PostgreSQL'))
+  .catch(err => {
+    console.error('❌ Database connection failed:');
+    console.error('Error message:', err.message);
+    console.error('Make sure DATABASE_URL is set correctly in Render environment variables');
+  });
 
-db.select('*').from('users').then(({ data, error }) => {
-	if (error) console.error('Supabase error:', error);
-	// console.log(data);
-});
+// db.select('*').from('users').then(({ data, error }) => {
+// 	if (error) console.error('Supabase error:', error);
+// 	// console.log(data);
+// });
 
 const app = express();
 app.use(cors());
