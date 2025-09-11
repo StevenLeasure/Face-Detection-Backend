@@ -11,7 +11,7 @@
 //   const MODEL_ID = 'face-detection';
 //   const IMAGE_URL = imageUrl;
 
-const handleImage = (supabase) => (req, res) => {
+const handleImage = (db) => (req, res) => {
 	const {id} = req.body;
 	db('users').where('id', '=', id)
 	.increment('entries', 1)

@@ -1,31 +1,38 @@
 const express = require('express');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
-// const knex = require('knex')
+const knex = require('knex')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-const { createClient } = require('@supabase/supabase-js');
+// const { createClient } = require('@supabase/supabase-js');
 
-const supabaseUrl = 'https://unvsuxcysvxkoslhtfrq.supabase.co'
-const supabaseKey = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVudnN1eGN5c3Z4a29zbGh0ZnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyOTcwNjgsImV4cCI6MjA3Mjg3MzA2OH0.bcMXvFFOe6kuNqKI3x8wIORGgN-QDK7ELPjLshlHD98'
-const supabase = createClient(supabaseUrl, supabaseKey)
+const app = express();
+app.use(cors());
+app.use(express.urlencoded({extended: false}));
+app.use(express.json());
+
+// const supabaseUrl = 'https://unvsuxcysvxkoslhtfrq.supabase.co'
+// const supabaseKey = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVudnN1eGN5c3Z4a29zbGh0ZnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyOTcwNjgsImV4cCI6MjA3Mjg3MzA2OH0.bcMXvFFOe6kuNqKI3x8wIORGgN-QDK7ELPjLshlHD98'
+// const supabase = createClient(supabaseUrl, supabaseKey)
 
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
 
-// const db =knex({
-//   client: 'pg',
-//   connection: process.env.DATABASE_URL || {
-//     host: '127.0.0.1',
-//     user: 'StevenCoding',
-//     port: 5432,
-//     password: '',
-//     database: 'smart-brain',
-//   },
-// });
+const db =knex({
+  client: 'pg',
+  connection: {
+    connectionString: process.env.DATABASE_URL || 'postgresql://postgres:[YOUR-PASSWORD]@db.unvsuxcysvxkoslhtfrq.supabase.co:5432/postgres',
+    ssl: { rejectUnauthorized: false }, // Important for Supabase
+    host: 'db.unvsuxcysvxkoslhtfrq.supabase.co',
+    port: 5432,
+    user: 'postgres',
+    password: process.env.SUPABASE_DB_PASSWORD,
+    database: 'postgres'
+  },
+});
 
-supabase.from('users').select('*').then(({ data, error }) => {
+db.select('*').from('users').then(({ data, error }) => {
 	if (error) console.error('Supabase error:', error);
 	// console.log(data);
 });
@@ -39,13 +46,13 @@ app.use(express.json());
 
 app.get('/', (req, res) => {res.send('it is working')})
 
-app.post('/signin', signin.handleSignin(supabase, bcrypt))
+app.post('/signin', signin.handleSignin(db, bcrypt))
 
-app.post('/register', register.handleRegister(supabase, bcrypt))
+app.post('/register', register.handleRegister(db, bcrypt))
 
-app.get('/profile/:id', profile.handleProfileGet(supabase))
+app.get('/profile/:id', profile.handleProfileGet(db))
 
-app.put('/image', image.handleImage(supabase))
+app.put('/image', image.handleImage(db))
 
 app.post('/api/clarifai', async (req, res) => {
   const { imageUrl, requestOptions } = req.body;
